@@ -1,9 +1,7 @@
 from tkinter import *
-import pygame
-import sys
-
-pygame.init()
-
+from tkinter import messagebox
+# widgets = GUI elements: buttons, textboxes, labels, images
+# windows = serves as a container to hold or contain these widgets
 
 class Player():
     def __init__(self, player_num):
@@ -33,71 +31,82 @@ class SOS_GAME_BOARD():
             for col in range(self.NUM_COLS):
                 self.board[row].append(0)  # append empty cell
 
-    def set_cell_value(self, row, col, value):
-        self.board[row][col] = value
-
     def get_cell_value(self, row, col):
         return self.board[row][col]
 
 
 class SOS_GAME_GUI():
-    SCREEN_WIDTH = 800
-    SCREEN_HEIGHT = 800
-    SYMBOL_COLOR = (0, 0, 0)
-    BACKGROUND_COLOR = (153, 209, 204)
-    WHITE_CELL_COLOR = (255, 255, 255)
-    CELL_WIDTH = 30
-    CELL_HEIGHT = 30
-    MARGIN = 30
-    FONT = pygame.font.Font('freesansbold.ttf', 30)
-    EMPTY_CELL = FONT.render('-', True, SYMBOL_COLOR, WHITE_CELL_COLOR)
-    S_SYMBOL = FONT.render('S', True, SYMBOL_COLOR, WHITE_CELL_COLOR)
-    O_SYMBOL = FONT.render('O', True, SYMBOL_COLOR, WHITE_CELL_COLOR)
-    BLOCK_SIZE = 30
-
-    SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption('SOS GAME')
-    SCREEN.fill(BACKGROUND_COLOR)
+    WINDOW_WIDTH = 1000
+    WINDOW_HEIGHT = 500
+    WINDOW = Tk()
+    WINDOW.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
+    WINDOW.title("Morgan's SOS Game")
+    BUTTON_HEIGHT = 3
+    BUTTON_WIDTH = 6
+    RED_PLAYER_OPTION =  StringVar()
+    BLUE_PLAYER_OPTION = StringVar()
+    SIMPLE_GAME = 0
+    GENERAL_GAME = 1
 
     def __init__(self):
-        self.board = SOS_GAME_BOARD()
+        self.gameboard = SOS_GAME_BOARD()
+        self.gametype = ' '
 
     def start(self):
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_position = pygame.mouse.get_pos()
-                    column = mouse_position[0] // (self.CELL_WIDTH + self.MARGIN)
-                    row = mouse_position[1] // (self.CELL_HEIGHT + self.MARGIN)
-                    self.board.set_cell_value(row, column, 1)
-
-                    print("Click ", mouse_position, "Grid coordinates: ", row, column)
+        self.create_GUI_gameboard()
+        self.WINDOW.mainloop() # place window on computer screen, listen for events
 
 
-                if event.type == pygame.QUIT:
-                    sys.exit()
+    def create_GUI_gameboard(self):
+        for r in range(self.gameboard.NUM_ROWS):
+            for c in range(self.gameboard.NUM_COLS):
+                tile = self.gameboard.board[r][c] = Button(self.WINDOW, bg="SystemButtonFace", height=self.BUTTON_HEIGHT, width=self.BUTTON_WIDTH, command=lambda row1 = r, col1 = c: self.make_move(row1, col1))
+                tile.grid(row=r, column=c, padx= 2, pady=2)
 
-            self.draw_board()
-            pygame.display.update()
+        # simple and general game buttons
+        simple_game_button = Radiobutton(self.WINDOW, text='Simple Game', variable=self.gametype, value=self.SIMPLE_GAME, command=lambda: self.start_simple_game())
+        simple_game_button.grid(row=0, column=9)
+        general_game_button = Radiobutton(self.WINDOW, text='General Game', variable=self.gametype, value=self.GENERAL_GAME, command=lambda: self.start_general_game())
+        general_game_button.grid(row=0, column=10)
 
-    def draw_board(self):
-        for row in range(self.board.NUM_ROWS):
-            for col in range(self.board.NUM_COLS):
-                if self.board.get_cell_value(row, col) == 0:
-                    symbol = self.EMPTY_CELL
-                    
-                elif self.board.get_cell_value(row, col) == 1:
-                    symbol = self.S_SYMBOL
-                
-                elif self.board.get_cell_value(row, col) == 2:
-                    symbol = self.O_SYMBOL
+        # player labels
+        red_player_label = Label(self.WINDOW, text='RED PLAYER')
+        red_player_label.grid(row=2, column=9)
+        blue_player_label = Label(self.WINDOW, text='BLUE PLAYER')
+        blue_player_label.grid(row=2, column=10, padx=200)
 
-                symbolRect = symbol.get_rect(topleft=((self.MARGIN + self.CELL_WIDTH) * col + self.MARGIN, (
-                    self.MARGIN + self.CELL_HEIGHT) * row + self.MARGIN))
-                self.SCREEN.blit(symbol, symbolRect)
+        # player S/O radio buttons
+        red_player_S_button = Radiobutton(self.WINDOW, text='S', variable= self.RED_PLAYER_OPTION, value='S', command=lambda: self.radio_click())
+        red_player_S_button.grid(row=3, column=9)
+        red_player_O_button = Radiobutton(self.WINDOW, text='O', variable= self.RED_PLAYER_OPTION, value='O', command=lambda: self.radio_click())
+        red_player_O_button.grid(row=4, column=9)
+        blue_player_S_button = Radiobutton(self.WINDOW, text='S', variable= self.BLUE_PLAYER_OPTION, value='S', command=lambda: self.radio_click())
+        blue_player_S_button.grid(row=3, column=10, padx=200)
+        blue_player_O_button = Radiobutton(self.WINDOW, text='O', variable= self.BLUE_PLAYER_OPTION, value='O', command=lambda: self.radio_click())
+        blue_player_O_button.grid(row=4, column=10, padx=200)
 
-                # pygame.draw.rect(self.SCREEN, cell_display, [(self.MARGIN + self.CELL_WIDTH) * col + self.MARGIN, (
-                #     self.MARGIN + self.CELL_HEIGHT) * row + self.MARGIN, self.CELL_WIDTH, self.CELL_HEIGHT])
+    def radio_click(self):
+        print('Red value: ', self.RED_PLAYER_OPTION.get())
+        print('Blue value: ', self.BLUE_PLAYER_OPTION.get())
+
+    def start_simple_game(self):
+        self.gametype = self.SIMPLE_GAME
+        messagebox.showinfo('Game', 'Simple Game Started!')
+
+    def start_general_game(self):
+        self.gametype = self.GENERAL_GAME
+        messagebox.showinfo('Game', 'General Game Started!')
+
+    def make_move(self, row, col):
+        print('row: ', row, ' col: ', col)
+        tile = self.gameboard.get_cell_value(row, col)
+        if self.RED_PLAYER_OPTION.get() == 'S':
+            tile['text'] = 'S'
+        elif self.RED_PLAYER_OPTION.get() == 'O':
+            tile['text'] = 'O'
+            
+        
+
 
 
 # MAIN
