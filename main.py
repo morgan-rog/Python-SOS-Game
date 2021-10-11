@@ -1,3 +1,4 @@
+from tkinter import *
 import pygame
 import sys
 
@@ -7,6 +8,13 @@ pygame.init()
 class Player():
     def __init__(self, player_num):
         self.player_num = player_num
+        self.turn = False
+
+    def get_turn(self):
+        return self.turn
+    
+    def set_turn(self, turn_status):
+        self.turn = turn_status
 
 
 class SOS_GAME_BOARD():
