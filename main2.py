@@ -39,13 +39,13 @@ class SOS_GAME_BOARD():
 
 
 class SOS_GAME_GUI():
-    WINDOW_WIDTH = 1200
-    WINDOW_HEIGHT = 1200
+    WINDOW_WIDTH = 1000
+    WINDOW_HEIGHT = 500
     WINDOW = Tk()
     WINDOW.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
     WINDOW.title("Morgan's SOS Game")
     BUTTON_HEIGHT = 3
-    BUTTON_WIDTH = 4
+    BUTTON_WIDTH = 6
 
     def __init__(self):
         self.gameboard = SOS_GAME_BOARD()
@@ -59,7 +59,13 @@ class SOS_GAME_GUI():
         for r in range(self.gameboard.NUM_ROWS):
             for c in range(self.gameboard.NUM_COLS):
                 self.gameboard.board[r][c] = Button(self.WINDOW, bg="SystemButtonFace", height=self.BUTTON_HEIGHT, width=self.BUTTON_WIDTH)
-                self.gameboard.board[r][c].grid(row=r, column=c)
+                self.gameboard.board[r][c].grid(row=r, column=c, padx= 2, pady=2)
+
+        player1_label = Label(self.WINDOW, text='RED PLAYER')
+        player1_label.grid(row=2, column=9)
+
+        player2_label = Label(self.WINDOW, text='BLUE PLAYER')
+        player2_label.grid(row=2, column=10, padx=200)
 
     #def create_player_buttons():
 
