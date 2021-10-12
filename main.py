@@ -36,6 +36,7 @@ class SOS_GAME_BOARD():
 
 
 class SOS_GAME_GUI():
+    # define window and widget variables
     WINDOW_WIDTH = 1000
     WINDOW_HEIGHT = 500
     WINDOW = Tk()
@@ -47,10 +48,15 @@ class SOS_GAME_GUI():
     BLUE_PLAYER_OPTION = StringVar()
     SIMPLE_GAME = 0
     GENERAL_GAME = 1
+    RED_TURN = 'Red\'s Turn'
+    BLUE_TURN = 'Blue\'s Turn'
 
     def __init__(self):
         self.gameboard = SOS_GAME_BOARD()
         self.gametype = ' '
+        self.current_turn = self.RED_TURN
+        self.current_turn_string = StringVar()
+        self.current_turn_string.set(self.RED_TURN)
 
     def start(self):
         self.create_GUI_gameboard()
@@ -73,7 +79,7 @@ class SOS_GAME_GUI():
         red_player_label = Label(self.WINDOW, text='RED PLAYER')
         red_player_label.grid(row=2, column=9)
         blue_player_label = Label(self.WINDOW, text='BLUE PLAYER')
-        blue_player_label.grid(row=2, column=10, padx=200)
+        blue_player_label.grid(row=2, column=10, padx=100)
 
         # player S/O radio buttons
         red_player_S_button = Radiobutton(self.WINDOW, text='S', variable= self.RED_PLAYER_OPTION, value='S', command=lambda: self.radio_click())
@@ -81,9 +87,14 @@ class SOS_GAME_GUI():
         red_player_O_button = Radiobutton(self.WINDOW, text='O', variable= self.RED_PLAYER_OPTION, value='O', command=lambda: self.radio_click())
         red_player_O_button.grid(row=4, column=9)
         blue_player_S_button = Radiobutton(self.WINDOW, text='S', variable= self.BLUE_PLAYER_OPTION, value='S', command=lambda: self.radio_click())
-        blue_player_S_button.grid(row=3, column=10, padx=200)
+        blue_player_S_button.grid(row=3, column=10)
         blue_player_O_button = Radiobutton(self.WINDOW, text='O', variable= self.BLUE_PLAYER_OPTION, value='O', command=lambda: self.radio_click())
-        blue_player_O_button.grid(row=4, column=10, padx=200)
+        blue_player_O_button.grid(row=4, column=10)
+
+        # current_turn_label_description = Label(self.WINDOW, text= 'Current Turn: ')
+        # current_turn_label_description.grid(row=6, column=9)
+        current_turn_label = Label(self.WINDOW, textvariable=self.current_turn_string)
+        current_turn_label.grid(row=6, column=9)
 
     def radio_click(self):
         print('Red value: ', self.RED_PLAYER_OPTION.get())
@@ -100,13 +111,31 @@ class SOS_GAME_GUI():
     def make_move(self, row, col):
         print('row: ', row, ' col: ', col)
         tile = self.gameboard.get_cell_value(row, col)
-        if self.RED_PLAYER_OPTION.get() == 'S':
-            tile['text'] = 'S'
-        elif self.RED_PLAYER_OPTION.get() == 'O':
-            tile['text'] = 'O'
-            
-        
 
+        if (self.current_turn == self.RED_TURN) and (self.RED_PLAYER_OPTION.get() == 'S'):
+            tile['text'] = 'S'
+            self.set_blue_turn()
+        elif (self.current_turn == self.RED_TURN) and (self.RED_PLAYER_OPTION.get() == 'O'):
+            tile['text'] = 'O'
+            self.set_blue_turn()
+
+        elif (self.current_turn == self.BLUE_TURN) and (self.BLUE_PLAYER_OPTION.get() == 'S'):
+            tile['text'] = 'S'
+            self.set_red_turn()
+        elif(self.current_turn == self.BLUE_TURN) and (self.BLUE_PLAYER_OPTION.get() == 'O'):
+            tile['text'] = 'O'
+            self.set_red_turn()
+
+    def get_current_turn(self):
+        return self.current_turn
+
+    def set_red_turn(self):
+        self.current_turn = self.RED_TURN
+        self.current_turn_string.set(self.RED_TURN)
+
+    def set_blue_turn(self):
+        self.current_turn = self.BLUE_TURN
+        self.current_turn_string.set(self.BLUE_TURN)
 
 
 # MAIN
