@@ -3,18 +3,6 @@ from tkinter import messagebox
 # widgets = GUI elements: buttons, textboxes, labels, images
 # windows = serves as a container to hold or contain these widgets
 
-class Player():
-    def __init__(self, player_num):
-        self.player_num = player_num
-        self.turn = False
-
-    def get_turn(self):
-        return self.turn
-    
-    def set_turn(self, turn_status):
-        self.turn = turn_status
-
-
 class SOS_GAME_BOARD():
 
     NUM_ROWS = 8
@@ -40,14 +28,13 @@ class SOS_GAME_GUI():
     WINDOW_WIDTH = 1000
     WINDOW_HEIGHT = 500
     WINDOW = Tk()
-    WINDOW.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
-    WINDOW.title("Morgan's SOS Game")
+    WINDOW_TITLE = 'Morgan\'s SOS Game'
     BUTTON_HEIGHT = 3
     BUTTON_WIDTH = 6
     RED_PLAYER_OPTION =  StringVar()
     BLUE_PLAYER_OPTION = StringVar()
-    SIMPLE_GAME = 0
-    GENERAL_GAME = 1
+    SIMPLE_GAME = 'Simple Game'
+    GENERAL_GAME = 'General Game'
     RED_TURN = 'Red\'s Turn'
     BLUE_TURN = 'Blue\'s Turn'
 
@@ -64,6 +51,9 @@ class SOS_GAME_GUI():
 
 
     def create_GUI_gameboard(self):
+        self.WINDOW.geometry(f"{self.WINDOW_WIDTH}x{self.WINDOW_HEIGHT}")
+        self.WINDOW.title(self.WINDOW_TITLE)
+        
         for r in range(self.gameboard.NUM_ROWS):
             for c in range(self.gameboard.NUM_COLS):
                 tile = self.gameboard.board[r][c] = Button(self.WINDOW, bg="SystemButtonFace", height=self.BUTTON_HEIGHT, width=self.BUTTON_WIDTH, command=lambda row1 = r, col1 = c: self.make_move(row1, col1))
@@ -102,11 +92,11 @@ class SOS_GAME_GUI():
 
     def start_simple_game(self):
         self.gametype = self.SIMPLE_GAME
-        messagebox.showinfo('Game', 'Simple Game Started!')
+        messagebox.showinfo('Game', self.gametype)
 
     def start_general_game(self):
         self.gametype = self.GENERAL_GAME
-        messagebox.showinfo('Game', 'General Game Started!')
+        messagebox.showinfo('Game', self.gametype)
 
     def make_move(self, row, col):
         print('row: ', row, ' col: ', col)
