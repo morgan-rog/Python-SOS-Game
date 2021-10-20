@@ -49,7 +49,8 @@ class SOS_GAME_GUI():
         self.set_red_turn()
 
     def start(self):
-        self.WINDOW.mainloop() # place window on computer screen, listen for events
+        # place window on computer screen, listen for events
+        self.WINDOW.mainloop()
 
     def restart(self):
         for r in range(self.gameboard.NUM_ROWS):
@@ -114,30 +115,28 @@ class SOS_GAME_GUI():
         # print('row: ', row, ' col: ', col)
         tile = self.gameboard.get_cell_button(row, col)
 
-        if (self.current_turn == self.RED_TURN) and (self.red_player_option.get() == 'S'):
+        if (self.current_turn.get() == self.RED_TURN) and (self.red_player_option.get() == 'S'):
             tile['text'] = 'S'
             self.set_blue_turn()
-        elif (self.current_turn == self.RED_TURN) and (self.red_player_option.get() == 'O'):
+        elif (self.current_turn.get() == self.RED_TURN) and (self.red_player_option.get() == 'O'):
             tile['text'] = 'O'
             self.set_blue_turn()
 
-        elif (self.current_turn == self.BLUE_TURN) and (self.blue_player_option.get() == 'S'):
+        elif (self.current_turn.get() == self.BLUE_TURN) and (self.blue_player_option.get() == 'S'):
             tile['text'] = 'S'
             self.set_red_turn()
-        elif(self.current_turn == self.BLUE_TURN) and (self.blue_player_option.get() == 'O'):
+        elif(self.current_turn.get() == self.BLUE_TURN) and (self.blue_player_option.get() == 'O'):
             tile['text'] = 'O'
             self.set_red_turn()
 
     def get_current_turn(self):
-        return self.current_turn
+        return self.current_turn.get()
 
     def set_red_turn(self):
-        self.current_turn = self.RED_TURN
-        # self.current_turn_string.set(self.RED_TURN)
-
+        self.current_turn.set(self.RED_TURN)
+        
     def set_blue_turn(self):
-        self.current_turn = self.BLUE_TURN
-        # self.current_turn_string.set(self.BLUE_TURN)
+        self.current_turn.set(self.BLUE_TURN)
 
 
 if __name__ == '__main__':
