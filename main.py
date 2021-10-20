@@ -45,12 +45,11 @@ class SOS_GAME_GUI():
         self.gametype = ' '
         self.red_player_option = StringVar()
         self.blue_player_option = StringVar()
-        self.current_turn_string = StringVar()
+        self.current_turn = StringVar()
         self.set_red_turn()
 
     def start(self):
-        self.create_GUI_gameboard()
-        #self.WINDOW.mainloop() # place window on computer screen, listen for events
+        self.WINDOW.mainloop() # place window on computer screen, listen for events
 
     def restart(self):
         for r in range(self.gameboard.NUM_ROWS):
@@ -96,7 +95,7 @@ class SOS_GAME_GUI():
         blue_player_O_button.grid(row=4, column=10)
 
         # output of current turn label
-        current_turn_label = Label(self.WINDOW, textvariable=self.current_turn_string)
+        current_turn_label = Label(self.WINDOW, textvariable=self.current_turn)
         current_turn_label.grid(row=6, column=9)
 
     def radio_click(self):
@@ -141,6 +140,8 @@ class SOS_GAME_GUI():
         # self.current_turn_string.set(self.BLUE_TURN)
 
 
-game = SOS_GAME_GUI()
-game.start()
+if __name__ == '__main__':
+    game = SOS_GAME_GUI()
+    game.create_GUI_gameboard()
+    game.start()
 
