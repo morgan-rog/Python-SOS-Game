@@ -33,9 +33,3 @@ class Test_SOS_GAME_GUI(unittest.TestCase):
     def test_start_general_game(self):
         self.game.start_general_game()
         return self.assertEqual(self.game.gametype, self.game.GENERAL_GAME)
-
-
-
-    
-
-        

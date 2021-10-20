@@ -144,4 +144,3 @@ if __name__ == '__main__':
     game = SOS_GAME_GUI()
     game.create_GUI_gameboard()
     game.start()
-
