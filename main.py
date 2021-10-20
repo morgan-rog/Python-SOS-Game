@@ -19,8 +19,12 @@ class SOS_GAME_BOARD():
             for col in range(self.NUM_COLS):
                 self.board[row].append(0)  # append empty cell
 
-    def get_cell_value(self, row, col):
+    def get_cell_button(self, row, col):
         return self.board[row][col]
+
+    def get_cell_button_value(self, row, col):
+        return self.board[row][col]['text']
+    
 
 
 class SOS_GAME_GUI():
@@ -46,13 +50,15 @@ class SOS_GAME_GUI():
 
     def start(self):
         self.create_GUI_gameboard()
-        self.WINDOW.mainloop() # place window on computer screen, listen for events
+        #self.WINDOW.mainloop() # place window on computer screen, listen for events
 
     def restart(self):
         for r in range(self.gameboard.NUM_ROWS):
             for c in range(self.gameboard.NUM_COLS):
                 tile = self.gameboard.board[r][c]
                 tile['text'] = ' '
+
+        self.set_red_turn()
 
     def create_GUI_gameboard(self):
         self.WINDOW.geometry(f"{self.WINDOW_WIDTH}x{self.WINDOW_HEIGHT}")
@@ -80,13 +86,13 @@ class SOS_GAME_GUI():
         blue_player_label.grid(row=2, column=10, padx=100)
 
         # player S/O radio buttons
-        red_player_S_button = Radiobutton(self.WINDOW, text='S', variable= self.red_player_option, value='S', command=lambda: self.radio_click())
+        red_player_S_button = Radiobutton(self.WINDOW, text='S', variable= self.red_player_option, value='S')
         red_player_S_button.grid(row=3, column=9)
-        red_player_O_button = Radiobutton(self.WINDOW, text='O', variable= self.red_player_option, value='O', command=lambda: self.radio_click())
+        red_player_O_button = Radiobutton(self.WINDOW, text='O', variable= self.red_player_option, value='O')
         red_player_O_button.grid(row=4, column=9)
-        blue_player_S_button = Radiobutton(self.WINDOW, text='S', variable= self.blue_player_option, value='S', command=lambda: self.radio_click())
+        blue_player_S_button = Radiobutton(self.WINDOW, text='S', variable= self.blue_player_option, value='S')
         blue_player_S_button.grid(row=3, column=10)
-        blue_player_O_button = Radiobutton(self.WINDOW, text='O', variable= self.blue_player_option, value='O', command=lambda: self.radio_click())
+        blue_player_O_button = Radiobutton(self.WINDOW, text='O', variable= self.blue_player_option, value='O')
         blue_player_O_button.grid(row=4, column=10)
 
         # output of current turn label
@@ -106,8 +112,8 @@ class SOS_GAME_GUI():
         messagebox.showinfo('Game', self.gametype)
 
     def make_move(self, row, col):
-        print('row: ', row, ' col: ', col)
-        tile = self.gameboard.get_cell_value(row, col)
+        # print('row: ', row, ' col: ', col)
+        tile = self.gameboard.get_cell_button(row, col)
 
         if (self.current_turn == self.RED_TURN) and (self.red_player_option.get() == 'S'):
             tile['text'] = 'S'
@@ -128,14 +134,13 @@ class SOS_GAME_GUI():
 
     def set_red_turn(self):
         self.current_turn = self.RED_TURN
-        self.current_turn_string.set(self.RED_TURN)
+        # self.current_turn_string.set(self.RED_TURN)
 
     def set_blue_turn(self):
         self.current_turn = self.BLUE_TURN
-        self.current_turn_string.set(self.BLUE_TURN)
+        # self.current_turn_string.set(self.BLUE_TURN)
 
 
-# MAIN
 game = SOS_GAME_GUI()
 game.start()
 
