@@ -234,8 +234,8 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
         super().__init__(board_size)
         # define window and widget variables
         self.WINDOW = Tk()
-        self.WINDOW_WIDTH = board_size * 250
-        self.WINDOW_HEIGHT = board_size * 125
+        self.WINDOW_WIDTH = 1500
+        self.WINDOW_HEIGHT = 900
         self.WINDOW_TITLE = 'Morgan\'s SOS Game'
         self.BUTTON_HEIGHT = 3
         self.BUTTON_WIDTH = 6
@@ -358,6 +358,9 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
                 'tile occupied', 'cannot make a move here - choose another tile')
 
         elif (self.get_current_turn() == self.RED_TURN):
+            if self.red_player.option.get() != 'S' and self.red_player.option.get() != 'O':
+                messagebox.showerror('choose option', 'player must choose S or O before making a move')
+                return None
             tile['text'] = self.red_player.option.get()
             color = self.red_player.color
 
@@ -395,6 +398,9 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
                     self.set_blue_turn()
 
         elif (self.get_current_turn() == self.BLUE_TURN):
+            if self.blue_player.option.get() != 'S' and self.blue_player.option.get() != 'O':
+                messagebox.showerror('choose option', 'player must choose S or O before making a move')
+                return None
             tile['text'] = self.blue_player.option.get()
             color = self.blue_player.color
 
