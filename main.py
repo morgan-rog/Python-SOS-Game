@@ -1,21 +1,17 @@
 from tkinter import *
 from tkinter import messagebox
 from datetime import datetime
-# widgets = GUI elements: buttons, textboxes, labels, images
-# windows = serves as a container to hold or contain these widgets
 
 
 class Player():
+
     def __init__(self, name, color):
-        #self.id = id
         self.name = name
         self.color = color
         self.num_wins = 0
         self.num_sos = 0
         self.option = StringVar()
 
-    # def get_id(self):
-    #     return self.id
     def add_win(self):
         self.num_wins += 1
     
@@ -83,7 +79,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
         try:
             if self.board[move_row-1][move_col]['text'] == 'S' and self.board[move_row+1][move_col]['text'] == 'S':
                 # up and down
@@ -92,7 +88,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
         try:
             if self.board[move_row+1][move_col-1]['text'] == 'S' and self.board[move_row-1][move_col+1]['text'] == 'S':
                 # down left to up right diag
@@ -101,7 +97,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
         try:
             if self.board[move_row-1][move_col-1]['text'] == 'S' and self.board[move_row+1][move_col+1]['text'] == 'S':
                 # up left to down right diag
@@ -110,7 +106,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
 
         return False
 
@@ -125,7 +121,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
         try:
             if self.board[move_row-2][move_col]['text'] == 'S' and self.board[move_row-1][move_col]['text'] == 'O':
                 # up and down
@@ -134,7 +130,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
         try:
             if self.board[move_row+2][move_col-2]['text'] == 'S' and self.board[move_row+1][move_col-1]['text'] == 'O':
                 # down left to up right diag
@@ -143,7 +139,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
         try:
             if self.board[move_row-2][move_col-2]['text'] == 'S' and self.board[move_row-1][move_col-1]['text'] == 'O':
                 # up left to down right diag
@@ -152,7 +148,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
 
         return False
 
@@ -167,7 +163,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
         try:
             if self.board[move_row+2][move_col]['text'] == 'S' and self.board[move_row+1][move_col]['text'] == 'O':
                 # up and down
@@ -176,7 +172,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
         try:
             if self.board[move_row-2][move_col+2]['text'] == 'S' and self.board[move_row-1][move_col+1]['text'] == 'O':
                 # down left to up right diag
@@ -185,7 +181,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
         try:
             if self.board[move_row+2][move_col+2]['text'] == 'S' and self.board[move_row+1][move_col+1]['text'] == 'O':
                 # up left to down right diag
@@ -194,7 +190,7 @@ class SOS_GAME_BOARD():
                 move_tile['bg'] = player_color
                 return True
         except IndexError:
-            print('index error')
+            pass
 
         return False
 
@@ -234,12 +230,12 @@ class SOS_GAME_BOARD():
 
 class SOS_GAME_GUI(SOS_GAME_BOARD):
 
-    def __init__(self, board_size):
+    def __init__(self, board_size, to_record):
         super().__init__(board_size)
         # define window and widget variables
         self.WINDOW = Tk()
-        self.WINDOW_WIDTH = board_size * 125
-        self.WINDOW_HEIGHT = board_size * 70
+        self.WINDOW_WIDTH = board_size * 250
+        self.WINDOW_HEIGHT = board_size * 125
         self.WINDOW_TITLE = 'Morgan\'s SOS Game'
         self.BUTTON_HEIGHT = 3
         self.BUTTON_WIDTH = 6
@@ -251,6 +247,7 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
         self.red_player = Player("red player", "red")
         self.blue_player = Player("blue player", "blue")
         self.current_turn = StringVar()
+        self.to_record = to_record
         self.set_red_turn()
 
     def start(self):
@@ -271,8 +268,9 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
             file.write('\n')
 
     def restart(self):
+        if self.to_record:
+            self.record_game()
         self.reset_board()
-        self.record_game()
         self.set_red_turn()
         self.red_player.reset_sos()
         self.blue_player.reset_sos()
@@ -298,40 +296,38 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
         # restart game button
         restart_game_button = Button(
             self.WINDOW, text='Restart Game', command=lambda: self.restart())
-        restart_game_button.grid(row=7, column=self.col_count+3)
+        restart_game_button.grid(row=4, column=self.col_count+2)
 
         # player labels
         red_player_label = Label(self.WINDOW, text='RED PLAYER')
-        red_player_label.grid(row=2, column=self.col_count+1)
+        red_player_label.grid(row=1, column=self.col_count+1)
         blue_player_label = Label(self.WINDOW, text='BLUE PLAYER')
-        blue_player_label.grid(row=2, column=self.col_count+2, padx=100)
+        blue_player_label.grid(row=1, column=self.col_count+2, padx=100)
 
         # player S/O radio buttons
         red_player_S_button = Radiobutton(
             self.WINDOW, text='S', variable=self.red_player.option, value='S')
-        red_player_S_button.grid(row=3, column=self.col_count+1)
+        red_player_S_button.grid(row=2, column=self.col_count+1)
         red_player_O_button = Radiobutton(
             self.WINDOW, text='O', variable=self.red_player.option, value='O')
-        red_player_O_button.grid(row=4, column=self.col_count+1)
+        red_player_O_button.grid(row=3, column=self.col_count+1)
         blue_player_S_button = Radiobutton(
             self.WINDOW, text='S', variable=self.blue_player.option, value='S')
-        blue_player_S_button.grid(row=3, column=self.col_count+2)
+        blue_player_S_button.grid(row=2, column=self.col_count+2)
         blue_player_O_button = Radiobutton(
             self.WINDOW, text='O', variable=self.blue_player.option, value='O')
-        blue_player_O_button.grid(row=4, column=self.col_count+2)
+        blue_player_O_button.grid(row=3, column=self.col_count+2)
 
         # output of current turn label
         current_turn_label = Label(self.WINDOW, textvariable=self.current_turn)
-        current_turn_label.grid(row=6, column=self.col_count+1)
+        current_turn_label.grid(row=4, column=self.col_count+1)
 
     def start_simple_game(self):
         self.gametype = self.SIMPLE_GAME
-        #self.restart()
         messagebox.showinfo('Game', self.gametype)
 
     def start_general_game(self):
         self.gametype = self.GENERAL_GAME
-        #self.restart()
         messagebox.showinfo('Game', self.gametype)
 
     def is_simple_game(self):
@@ -445,32 +441,45 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
         self.current_turn.set(self.BLUE_TURN)
 
 
-class START_GAME():
+class START_GAME_MENU():
 
     def __init__(self):
         self.BOARD_SIZE_WINDOW = Tk()
         self.BOARD_SIZE_WINDOW.geometry("500x500")
         self.BOARD_SIZE_WINDOW.title("Select Board Size")
-        self.label = Label(self.BOARD_SIZE_WINDOW, text="Enter a board size (must be 3 or higher)")
+        self.to_record = BooleanVar()
+        self.label = Label(self.BOARD_SIZE_WINDOW, text="Enter a board size (must be >= 3 and <= 15)")
         self.label.pack()
         self.enter_board_size = Entry(self.BOARD_SIZE_WINDOW)
         self.enter_board_size.pack()
+        self.to_record_checkbox = Checkbutton(self.BOARD_SIZE_WINDOW, text='Record games', variable=self.to_record, pady=20)
+        self.to_record_checkbox.pack()
         self.start_button = Button(self.BOARD_SIZE_WINDOW, height=3, width=10, text="start game", command=lambda:self.start_game())
         self.start_button.pack()
+
+    def display_start_menu(self):
         self.BOARD_SIZE_WINDOW.mainloop()
 
     def start_game(self):
-        board_size = self.enter_board_size.get()
-        board_size = int(board_size)
+        try:
+            board_size = self.enter_board_size.get()
+            board_size = int(board_size)
+        except ValueError:
+            messagebox.showerror(
+                'invalid board size', 'enter a valid board size please (number >= 3 and <= 15)')
+            return None
 
-        if board_size <= 2:
-            messagebox.showerror('invalid board size', 'enter a valid board size please (number greater than 2)')
+        if board_size < 3 or board_size > 15:
+            messagebox.showerror(
+                'invalid board size', 'enter a valid board size please (number >= 3 and <= 15)')
+            return None
         else:
             self.BOARD_SIZE_WINDOW.destroy()
-            game = SOS_GAME_GUI(board_size)
+            game = SOS_GAME_GUI(board_size, self.to_record.get())
             game.create_GUI_gameboard()
             game.start()
 
 
 if __name__ == '__main__':
-    game = START_GAME()
+    start = START_GAME_MENU()
+    start.display_start_menu()
