@@ -72,7 +72,9 @@ class SOS_GAME_BOARD():
         '''selected move tile is in the middle'''
         move_tile = self.board[move_row][move_col]
         try:
-            if self.board[move_row][move_col-1]['text'] == 'S' and self.board[move_row][move_col+1]['text'] == 'S':
+            if (move_col - 1) < 0:
+                pass
+            elif self.board[move_row][move_col-1]['text'] == 'S' and self.board[move_row][move_col+1]['text'] == 'S':
                 # left to right
                 self.board[move_row][move_col-1]['bg'] = player_color
                 self.board[move_row][move_col+1]['bg'] = player_color
@@ -81,7 +83,9 @@ class SOS_GAME_BOARD():
         except IndexError:
             pass
         try:
-            if self.board[move_row-1][move_col]['text'] == 'S' and self.board[move_row+1][move_col]['text'] == 'S':
+            if (move_row - 1) < 0:
+                pass
+            elif self.board[move_row-1][move_col]['text'] == 'S' and self.board[move_row+1][move_col]['text'] == 'S':
                 # up and down
                 self.board[move_row-1][move_col]['bg'] = player_color
                 self.board[move_row+1][move_col]['bg'] = player_color
@@ -90,7 +94,9 @@ class SOS_GAME_BOARD():
         except IndexError:
             pass
         try:
-            if self.board[move_row+1][move_col-1]['text'] == 'S' and self.board[move_row-1][move_col+1]['text'] == 'S':
+            if (move_row - 1) < 0 or (move_col - 1) < 0:
+                pass
+            elif self.board[move_row+1][move_col-1]['text'] == 'S' and self.board[move_row-1][move_col+1]['text'] == 'S':
                 # down left to up right diag
                 self.board[move_row+1][move_col-1]['bg'] = player_color
                 self.board[move_row-1][move_col+1]['bg'] = player_color
@@ -99,7 +105,9 @@ class SOS_GAME_BOARD():
         except IndexError:
             pass
         try:
-            if self.board[move_row-1][move_col-1]['text'] == 'S' and self.board[move_row+1][move_col+1]['text'] == 'S':
+            if (move_row - 1) < 0 or (move_col - 1) < 0:
+                pass
+            elif self.board[move_row-1][move_col-1]['text'] == 'S' and self.board[move_row+1][move_col+1]['text'] == 'S':
                 # up left to down right diag
                 self.board[move_row-1][move_col-1]['bg'] = player_color
                 self.board[move_row+1][move_col+1]['bg'] = player_color
@@ -114,7 +122,9 @@ class SOS_GAME_BOARD():
         '''selected move tile is far right'''
         move_tile = self.board[move_row][move_col]
         try:
-            if self.board[move_row][move_col-2]['text'] == 'S' and self.board[move_row][move_col-1]['text'] == 'O':
+            if (move_col - 1) < 0 or (move_col - 2) < 0:
+                pass
+            elif self.board[move_row][move_col-2]['text'] == 'S' and self.board[move_row][move_col-1]['text'] == 'O':
                 # left to right
                 self.board[move_row][move_col-2]['bg'] = player_color
                 self.board[move_row][move_col-1]['bg'] = player_color
@@ -123,7 +133,9 @@ class SOS_GAME_BOARD():
         except IndexError:
             pass
         try:
-            if self.board[move_row-2][move_col]['text'] == 'S' and self.board[move_row-1][move_col]['text'] == 'O':
+            if (move_row - 1) < 0 or (move_row - 2) < 0:
+                pass
+            elif self.board[move_row-2][move_col]['text'] == 'S' and self.board[move_row-1][move_col]['text'] == 'O':
                 # up and down
                 self.board[move_row-2][move_col]['bg'] = player_color
                 self.board[move_row-1][move_col]['bg'] = player_color
@@ -132,7 +144,9 @@ class SOS_GAME_BOARD():
         except IndexError:
             pass
         try:
-            if self.board[move_row+2][move_col-2]['text'] == 'S' and self.board[move_row+1][move_col-1]['text'] == 'O':
+            if (move_col - 1) < 0 or (move_col - 2) < 0:
+                pass
+            elif self.board[move_row+2][move_col-2]['text'] == 'S' and self.board[move_row+1][move_col-1]['text'] == 'O':
                 # down left to up right diag
                 self.board[move_row+2][move_col-2]['bg'] = player_color
                 self.board[move_row+1][move_col-1]['bg'] = player_color
@@ -141,7 +155,9 @@ class SOS_GAME_BOARD():
         except IndexError:
             pass
         try:
-            if self.board[move_row-2][move_col-2]['text'] == 'S' and self.board[move_row-1][move_col-1]['text'] == 'O':
+            if (move_row - 1) < 0 or (move_row - 2) < 0 or (move_col - 1) < 0 or (move_col - 2) < 0:
+                pass
+            elif self.board[move_row-2][move_col-2]['text'] == 'S' and self.board[move_row-1][move_col-1]['text'] == 'O':
                 # up left to down right diag
                 self.board[move_row-2][move_col-2]['bg'] = player_color
                 self.board[move_row-1][move_col-1]['bg'] = player_color
@@ -174,7 +190,9 @@ class SOS_GAME_BOARD():
         except IndexError:
             pass
         try:
-            if self.board[move_row-2][move_col+2]['text'] == 'S' and self.board[move_row-1][move_col+1]['text'] == 'O':
+            if (move_row - 1) < 0 or (move_row - 2) < 0:
+                pass
+            elif self.board[move_row-2][move_col+2]['text'] == 'S' and self.board[move_row-1][move_col+1]['text'] == 'O':
                 # down left to up right diag
                 self.board[move_row-2][move_col+2]['bg'] = player_color
                 self.board[move_row-1][move_col+1]['bg'] = player_color
@@ -262,7 +280,7 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
             file.write(f'Gametype: {self.gametype}\n')
             file.write(f'\tRED # of wins: {self.red_player.get_wins()}\n')
             file.write(f'\tBLUE # of wins: {self.blue_player.get_wins()}\n')
-            if self.gametype == self.GENERAL_GAME:
+            if self.is_general_game():
                 file.write(f'\tRED SOS count: {self.red_player.get_sos()}\n')
                 file.write(f'\tBLUE SOS count: {self.blue_player.get_sos()}\n')
             file.write('\n')
