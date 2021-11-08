@@ -32,14 +32,14 @@ class Test_SOS_GAME_GUI(unittest.TestCase):
         self.game.set_red_turn()
         self.game.red_player.option.set('S')
         self.game.make_move(0,1)
-        return self.assertEqual(self.game.get_cell_button_value(0,1), self.game.red_player.option.get())
+        return self.assertEqual(self.game.board[0][1]['text'], self.game.red_player.option.get())
 
     def test_make_move_blue(self):
         self.game.start_simple_game()
         self.game.set_blue_turn()
         self.game.blue_player.option.set('O')
         self.game.make_move(0,1)
-        return self.assertEqual(self.game.get_cell_button_value(0,1), self.game.blue_player.option.get())
+        return self.assertEqual(self.game.board[0][1]['text'], self.game.blue_player.option.get())
 
     def test_make_invalid_move(self):
         self.game.start_simple_game()
@@ -51,7 +51,7 @@ class Test_SOS_GAME_GUI(unittest.TestCase):
         self.game.blue_player.option.set('O')
         self.game.make_move(2,2)
 
-        return self.assertEqual(self.game.get_cell_button_value(2,2), 'S')
+        return self.assertEqual(self.game.board[2][2]['text'], 'S')
 
     def test_start_simple_game(self):
         self.game.start_simple_game()
@@ -87,20 +87,6 @@ class Test_SOS_GAME_GUI(unittest.TestCase):
         self.game.board[1][1]['text'] = 'O'
         self.game.make_move(2,1)
         self.assertEqual(self.game.blue_player.get_wins(), 1)
-
-    def test_draw_simple_game(self):
-        self.game.gametype = self.game.GENERAL_GAME
-        for row in range(self.game.row_count):
-             for col in range(self.game.col_count):
-                 self.game.board[row][col]['text'] = 'S'
-        self.assertEqual(self.game.check_simple_game_status(2, 2, 'red'), 'draw')
-
-    def test_full_board_general_game(self):
-        self.game.gametype = self.game.GENERAL_GAME
-        for row in range(self.game.row_count):
-             for col in range(self.game.col_count):
-                 self.game.board[row][col]['text'] = 'S'
-        self.assertEqual(self.game.check_gen_game_status(2, 2, 'red'), 'full_board')
 
     def test_red_sos_score_general_game(self):
         self.game.gametype = self.game.GENERAL_GAME
