@@ -58,9 +58,6 @@ class SOS_GAME_BOARD():
     def get_cell_button(self, row, col):
         return self.board[row][col]
 
-    def get_cell_button_value(self, row, col):
-        return self.board[row][col]['text']
-
     def check_if_full_board(self):
         for row in range(self.row_count):
             for col in range(self.col_count):
@@ -212,33 +209,10 @@ class SOS_GAME_BOARD():
 
         return False
 
-    def check_gen_game_status(self, move_row, move_col, player_color):
-        '''returns true if game over, else false'''
-        '''General game: The game continues until the board has been filled up. The winner is the 
-            player who made the most SOSs. If both players made the same number of SOSs, then 
-            the game is a draw. When a player succeeds in creating an SOS, that player immediately 
-            akes another turn and continues to do so until no SOS is created on their turn. Otherwise,
-            turns alternate between players after each move'''
+    def check_game_status(self, move_row, move_col, player_color):
         symbol = self.board[move_row][move_col]['text']
-        if self.check_if_full_board():
-            return 'full_board'
+
         if symbol == 'O':
-            if self.middle_move_check(move_row, move_col, player_color):
-                return 'win'
-        elif symbol == 'S':
-            if self.right_move_check(move_row, move_col, player_color) or self.left_move_check(move_row, move_col, player_color):
-                return 'win'
-
-    def check_simple_game_status(self, move_row, move_col, player_color):
-        '''returns true if game over, else false'''
-        '''Simple game: The player who creates the first SOS is the winner. If no SOS is created
-            when the board has been filled up, then the game is a draw. Turns alternate between 
-            players after each move'''
-        symbol = self.board[move_row][move_col]['text']
-
-        if self.check_if_full_board():
-            return 'draw'
-        elif symbol == 'O':
             if self.middle_move_check(move_row, move_col, player_color):
                 return 'win'
         elif symbol == 'S':
@@ -382,38 +356,43 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
             tile['text'] = self.red_player.option.get()
             color = self.red_player.color
 
+            game_status = self.check_game_status(row, col, color)
+
             if self.is_simple_game():
-                simple_game_status = self.check_simple_game_status(
-                    row, col, color)
-                if simple_game_status == 'win':
+                if game_status == 'win':
                     self.show_player_win_message(self.red_player)
                     self.red_player.add_win()
                     self.restart()
-                elif simple_game_status == 'draw':
+                    return None
+
+                if self.check_if_full_board():
                     self.show_draw_message()
                     self.restart()
+                    return None
                 else:
                     self.set_blue_turn()
 
             elif self.is_general_game():
-                gen_game_status = self.check_gen_game_status(
-                    row, col, color)
-                if gen_game_status == 'win':
+                if game_status == 'win':
                     self.red_player.add_sos()
-                elif gen_game_status == 'full_board':
+                else:
+                    self.set_blue_turn()
+
+                if self.check_if_full_board():
                     if self.red_player.get_sos() > self.blue_player.get_sos():
                         self.show_player_win_message(self.red_player)
                         self.red_player.add_win()
                         self.restart()
+                        return None
                     elif self.blue_player.get_sos() > self.red_player.get_sos():
                         self.show_player_win_message(self.blue_player)
                         self.blue_player.add_win()
                         self.restart()
+                        return None
                     else:
                         self.show_draw_message()
                         self.restart()
-                else:
-                    self.set_blue_turn()
+                        return None
 
         elif (self.get_current_turn() == self.BLUE_TURN):
             if self.blue_player.option.get() != 'S' and self.blue_player.option.get() != 'O':
@@ -422,38 +401,43 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
             tile['text'] = self.blue_player.option.get()
             color = self.blue_player.color
 
+            game_status = self.check_game_status(row, col, color)
+
             if self.is_simple_game():
-                simple_game_status = self.check_simple_game_status(
-                    row, col, color)
-                if simple_game_status == 'win':
+                if game_status == 'win':
                     self.show_player_win_message(self.blue_player)
                     self.blue_player.add_win()
                     self.restart()
-                elif simple_game_status == 'draw':
+                    return None
+
+                if self.check_if_full_board():
                     self.show_draw_message()
                     self.restart()
+                    return None
                 else:
                     self.set_red_turn()
 
             if self.is_general_game():
-                gen_game_status = self.check_gen_game_status(
-                    row, col, color)
-                if gen_game_status == 'win':
+                if game_status == 'win':
                     self.blue_player.add_sos()
-                elif gen_game_status == 'full_board':
+                else:
+                    self.set_red_turn()
+                
+                if self.check_if_full_board():
                     if self.red_player.get_sos() > self.blue_player.get_sos():
                         self.show_player_win_message(self.red_player)
                         self.red_player.add_win()
                         self.restart()
+                        return None
                     elif self.blue_player.get_sos() > self.red_player.get_sos():
                         self.show_player_win_message(self.blue_player)
                         self.blue_player.add_win()
                         self.restart()
+                        return None
                     else:
                         self.show_draw_message()
                         self.restart()
-                else:
-                    self.set_red_turn()
+                        return None
 
     def get_current_turn(self):
         return self.current_turn.get()
