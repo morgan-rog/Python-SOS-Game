@@ -7,10 +7,12 @@ class Player():
 
     def __init__(self, name, color):
         self.name = name
+        self.type = 'Human'
         self.color = color
         self.num_wins = 0
         self.num_sos = 0
         self.option = StringVar()
+        self.option.set(' ')
 
     def add_win(self):
         self.num_wins += 1
@@ -32,6 +34,19 @@ class Player():
 
     def get_option(self):
         return self.option
+
+    def make_move(self, gameboard, row, col):
+        print('human move')
+
+
+class Computer(Player):
+    def __init__(self, name, color):
+        super().__init__(name, color)
+        self.type = 'Computer'
+
+    def make_move(self, gameboard, row, col):
+        print('computer move')
+
     
     
 class SOS_GAME_BOARD():
@@ -55,7 +70,7 @@ class SOS_GAME_BOARD():
                 tile['text'] = ' '
                 tile['bg'] = 'white'
 
-    def get_cell_button(self, row, col):
+    def get_tile(self, row, col):
         return self.board[row][col]
 
     def check_if_full_board(self):
@@ -214,16 +229,26 @@ class SOS_GAME_BOARD():
 
         if symbol == 'O':
             if self.middle_move_check(move_row, move_col, player_color):
-                return 'win'
+                return 'score'
         elif symbol == 'S':
             if self.right_move_check(move_row, move_col, player_color) or self.left_move_check(move_row, move_col, player_color):
-                return 'win'
+                return 'score'
 
 
-class SOS_GAME_GUI(SOS_GAME_BOARD):
+class SIMPLE_GAME():
+    def __init__(self):
+        self.type = 'Simple Game'
+
+
+class GENERAL_GAME():
+    def __init__(self):
+        self.type = 'General Game'
+
+class SOS_GAME_GUI():
 
     def __init__(self, board_size, to_record):
-        super().__init__(board_size)
+        self.gameboard = SOS_GAME_BOARD(board_size)
+        self.BOARD_SIZE = board_size
         # define window and widget variables
         self.WINDOW = Tk()
         self.WINDOW_WIDTH = 1500
@@ -233,13 +258,21 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
         self.BUTTON_WIDTH = 6
         self.SIMPLE_GAME = 'Simple Game'
         self.GENERAL_GAME = 'General Game'
+        self.COMPUTER = 'Computer'
+        self.HUMAN = 'Human'
         self.RED_TURN = 'Red\'s Turn'
         self.BLUE_TURN = 'Blue\'s Turn'
-        self.gametype = ' '
+        self.game = ' '
+        self.red_player_type = StringVar()
+        self.blue_player_type = StringVar()
+        self.gametype = StringVar()
         self.red_player = Player("red player", "red")
         self.blue_player = Player("blue player", "blue")
         self.current_turn = StringVar()
         self.to_record = to_record
+        self.red_player_type.set(' ')
+        self.blue_player_type.set(' ')
+        self.gametype.set(' ')
         self.set_red_turn()
 
     def start(self):
@@ -271,62 +304,100 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
         self.WINDOW.geometry(f"{self.WINDOW_WIDTH}x{self.WINDOW_HEIGHT}")
         self.WINDOW.title(self.WINDOW_TITLE)
 
-        for r in range(self.row_count):
-            for c in range(self.col_count):
-                tile = self.board[r][c] = Button(
+        for r in range(self.BOARD_SIZE):
+            for c in range(self.BOARD_SIZE):
+                tile = self.gameboard.board[r][c] = Button(
                     self.WINDOW, bg="white", text=' ', height=self.BUTTON_HEIGHT, width=self.BUTTON_WIDTH, command=lambda row1=r, col1=c: self.make_move(row1, col1))
                 tile.grid(row=r, column=c, padx=2, pady=2)
 
         # simple and general game buttons
         simple_game_button = Radiobutton(self.WINDOW, text='Simple Game', variable=self.gametype,
                                          value=self.SIMPLE_GAME, command=lambda: self.start_simple_game())
-        simple_game_button.grid(row=0, column=self.col_count+1)
+        simple_game_button.grid(row=0, column=self.BOARD_SIZE+1)
         general_game_button = Radiobutton(self.WINDOW, text='General Game', variable=self.gametype,
                                           value=self.GENERAL_GAME, command=lambda: self.start_general_game())
-        general_game_button.grid(row=0, column=self.col_count+2)
+        general_game_button.grid(row=0, column=self.BOARD_SIZE+2)
 
         # restart game button
         restart_game_button = Button(
             self.WINDOW, text='Restart Game', command=lambda: self.restart())
-        restart_game_button.grid(row=4, column=self.col_count+2)
+        restart_game_button.grid(row=4, column=self.BOARD_SIZE+2)
+
+        # player label frames
+        red_label_frame = Frame(self.WINDOW)
+        blue_label_frame = Frame(self.WINDOW)
 
         # player labels
-        red_player_label = Label(self.WINDOW, text='RED')
-        red_player_label.grid(row=1, column=self.col_count+1)
-        blue_player_label = Label(self.WINDOW, text='BLUE')
-        blue_player_label.grid(row=1, column=self.col_count+2, padx=100)
+        red_label = Label(red_label_frame, text='RED PLAYER')
+        blue_label = Label(blue_label_frame, text='BLUE PLAYER')
+
+        # human player radio buttons
+        red_human_button = Radiobutton(red_label_frame, text='Human', variable=self.red_player_type, value=self.HUMAN, command=lambda: self.set_red_human())
+        blue_human_button = Radiobutton(blue_label_frame, text='Human', variable=self.blue_player_type, value=self.HUMAN, command=lambda: self.set_blue_human())
+
+        red_label_frame.grid(row=1, column=self.BOARD_SIZE+1)
+        blue_label_frame.grid(row=1, column=self.BOARD_SIZE+2)
+
+        red_label.pack(side="top")
+        blue_label.pack(side="top")
+        red_human_button.pack(side="top")
+        blue_human_button.pack(side="top")
+
+        # player frames
+        red_button_frame = Frame(self.WINDOW)
+        blue_button_frame = Frame(self.WINDOW)
 
         # player S/O radio buttons
-        red_player_S_button = Radiobutton(
-            self.WINDOW, text='S', variable=self.red_player.option, value='S')
-        red_player_S_button.grid(row=2, column=self.col_count+1)
-        red_player_O_button = Radiobutton(
-            self.WINDOW, text='O', variable=self.red_player.option, value='O')
-        red_player_O_button.grid(row=3, column=self.col_count+1)
-        blue_player_S_button = Radiobutton(
-            self.WINDOW, text='S', variable=self.blue_player.option, value='S')
-        blue_player_S_button.grid(row=2, column=self.col_count+2)
-        blue_player_O_button = Radiobutton(
-            self.WINDOW, text='O', variable=self.blue_player.option, value='O')
-        blue_player_O_button.grid(row=3, column=self.col_count+2)
+        red_S_button = Radiobutton(
+            red_button_frame, text='S', variable=self.red_player.option, value='S')
+        red_O_button = Radiobutton(
+            red_button_frame, text='O', variable=self.red_player.option, value='O')
+
+        blue_S_button = Radiobutton(
+            blue_button_frame, text='S', variable=self.blue_player.option, value='S')
+        blue_O_button = Radiobutton(
+            blue_button_frame, text='O', variable=self.blue_player.option, value='O')
+
+        red_button_frame.grid(row=2, column=self.BOARD_SIZE+1)
+        blue_button_frame.grid(row=2, column=self.BOARD_SIZE+2)
+
+        red_S_button.pack(side="top")
+        red_O_button.pack(side="top")
+
+        blue_S_button.pack(side="top")
+        blue_O_button.pack(side="top")
+
+        # computer button frames
+        red_computer_frame = Frame(self.WINDOW)
+        blue_computer_frame = Frame(self.WINDOW)
+
+        # computer radio buttons
+        red_computer_button = Radiobutton(red_computer_frame, text='Computer', variable=self.red_player_type, value=self.COMPUTER, command=lambda: self.set_red_computer())
+        blue_computer_button = Radiobutton(blue_computer_frame, text='Computer', variable=self.blue_player_type, value=self.COMPUTER, command=lambda: self.set_blue_computer())
+
+        red_computer_frame.grid(row=3, column=self.BOARD_SIZE+1)
+        blue_computer_frame.grid(row=3, column=self.BOARD_SIZE+2)
+
+        red_computer_button.pack(side="top")
+        blue_computer_button.pack(side="top")
 
         # output of current turn label
         current_turn_label = Label(self.WINDOW, textvariable=self.current_turn)
-        current_turn_label.grid(row=4, column=self.col_count+1)
+        current_turn_label.grid(row=4, column=self.BOARD_SIZE+1)
 
     def start_simple_game(self):
-        self.gametype = self.SIMPLE_GAME
-        messagebox.showinfo('Game', self.gametype)
+        self.game = SIMPLE_GAME()
+        messagebox.showinfo('Game', self.game.type)
 
     def start_general_game(self):
-        self.gametype = self.GENERAL_GAME
-        messagebox.showinfo('Game', self.gametype)
+        self.game = GENERAL_GAME()
+        messagebox.showinfo('Game', self.game.type)
 
     def is_simple_game(self):
-        return self.gametype == self.SIMPLE_GAME
+        return self.game.type == self.SIMPLE_GAME
 
     def is_general_game(self):
-        return self.gametype == self.GENERAL_GAME
+        return self.game.type == self.GENERAL_GAME
 
     def show_player_win_message(self, winning_player):
         if self.is_simple_game():
@@ -338,106 +409,17 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
     def show_draw_message(self):
         messagebox.showinfo('DRAW', 'this game is a draw :)')
 
-    def make_move(self, row, col):
-        # print('row: ', row, ' col: ', col)
-        tile = self.get_cell_button(row, col)
+    def set_red_human(self):
+        self.red_player = Player("red player", "red")
 
-        if self.gametype == ' ':
-            messagebox.showerror('choose gamemode', 'please choose a gamemode')
+    def set_blue_human(self):
+        self.blue_player = Player("blue player", "blue")
 
-        elif tile['text'] == 'S' or tile['text'] == 'O':
-            messagebox.showerror(
-                'tile occupied', 'cannot make a move here - choose another tile')
+    def set_red_computer(self):
+        self.red_player = Computer("red player", "red")
 
-        elif (self.get_current_turn() == self.RED_TURN):
-            if self.red_player.option.get() != 'S' and self.red_player.option.get() != 'O':
-                messagebox.showerror('choose option', 'player must choose S or O before making a move')
-                return None
-            tile['text'] = self.red_player.option.get()
-            color = self.red_player.color
-
-            game_status = self.check_game_status(row, col, color)
-
-            if self.is_simple_game():
-                if game_status == 'win':
-                    self.show_player_win_message(self.red_player)
-                    self.red_player.add_win()
-                    self.restart()
-                    return None
-
-                if self.check_if_full_board():
-                    self.show_draw_message()
-                    self.restart()
-                    return None
-                else:
-                    self.set_blue_turn()
-
-            elif self.is_general_game():
-                if game_status == 'win':
-                    self.red_player.add_sos()
-                else:
-                    self.set_blue_turn()
-
-                if self.check_if_full_board():
-                    if self.red_player.get_sos() > self.blue_player.get_sos():
-                        self.show_player_win_message(self.red_player)
-                        self.red_player.add_win()
-                        self.restart()
-                        return None
-                    elif self.blue_player.get_sos() > self.red_player.get_sos():
-                        self.show_player_win_message(self.blue_player)
-                        self.blue_player.add_win()
-                        self.restart()
-                        return None
-                    else:
-                        self.show_draw_message()
-                        self.restart()
-                        return None
-
-        elif (self.get_current_turn() == self.BLUE_TURN):
-            if self.blue_player.option.get() != 'S' and self.blue_player.option.get() != 'O':
-                messagebox.showerror('choose option', 'player must choose S or O before making a move')
-                return None
-            tile['text'] = self.blue_player.option.get()
-            color = self.blue_player.color
-
-            game_status = self.check_game_status(row, col, color)
-
-            if self.is_simple_game():
-                if game_status == 'win':
-                    self.show_player_win_message(self.blue_player)
-                    self.blue_player.add_win()
-                    self.restart()
-                    return None
-
-                if self.check_if_full_board():
-                    self.show_draw_message()
-                    self.restart()
-                    return None
-                else:
-                    self.set_red_turn()
-
-            if self.is_general_game():
-                if game_status == 'win':
-                    self.blue_player.add_sos()
-                else:
-                    self.set_red_turn()
-                
-                if self.check_if_full_board():
-                    if self.red_player.get_sos() > self.blue_player.get_sos():
-                        self.show_player_win_message(self.red_player)
-                        self.red_player.add_win()
-                        self.restart()
-                        return None
-                    elif self.blue_player.get_sos() > self.red_player.get_sos():
-                        self.show_player_win_message(self.blue_player)
-                        self.blue_player.add_win()
-                        self.restart()
-                        return None
-                    else:
-                        self.show_draw_message()
-                        self.restart()
-                        return None
+    def set_blue_computer(self):
+        self.blue_player = Computer("blue player", "blue")
 
     def get_current_turn(self):
         return self.current_turn.get()
@@ -447,6 +429,26 @@ class SOS_GAME_GUI(SOS_GAME_BOARD):
 
     def set_blue_turn(self):
         self.current_turn.set(self.BLUE_TURN)
+
+    def make_move(self, row, col):
+        tile = self.gameboard.get_tile(row, col)
+
+        if self.game == ' ':
+            messagebox.showerror('choose gamemode', 'please choose a gamemode')
+
+        elif tile['text'] == 'S' or tile['text'] == 'O':
+            messagebox.showerror(
+                'tile occupied', 'cannot make a move here - choose another tile')
+
+        elif (self.red_player.option.get() == ' ') or (self.blue_player.option.get() == ' '):
+            messagebox.showerror('choose option', 'player must choose S or O before making a move')
+                
+        elif (self.get_current_turn() == self.RED_TURN):
+            self.red_player.make_move(self.gameboard, row, col)
+
+        elif (self.get_current_turn() == self.BLUE_TURN):
+            self.red_player.make_move(self.gameboard, row, col)
+
 
 
 class START_GAME_MENU():
