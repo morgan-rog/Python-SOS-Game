@@ -1,0 +1,13 @@
+EMPTY = ' '
+SIMPLE_GAME = 'Simple Game'
+GENERAL_GAME = 'General Game'
+COMPUTER = 'Computer'
+HUMAN = 'Human'
+RED_TURN = 'Red\'s Turn'
+BLUE_TURN = 'Blue\'s Turn'
+BAD_MOVE = 'Bad move'
+GOOD_MOVE = 'Good move'
+WIN = 'Win'
+SCORE = 'Score'
+DRAW = 'Draw'
+NULL = None
