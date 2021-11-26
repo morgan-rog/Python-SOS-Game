@@ -1,107 +1,90 @@
 import unittest
-from main import SOS_GAME_GUI
+import constant
+from main import SosGameGUI
 
-
-class Test_SOS_GAME_GUI(unittest.TestCase):
-
+class TestSosGameGUI(unittest.TestCase):
     def setUp(self):
-        self.game = SOS_GAME_GUI(3, True)
-        self.game.create_GUI_gameboard()
-
+        self.gameGUI = SosGameGUI()
+        self.gameGUI.BOARD_SIZE = 5
+        self.gameGUI.get_game_info()
+        self.gameGUI.create_GUI_gameboard()
+    
     def tearDown(self):
         return None
 
-    def test_set_red_turn(self):
-        self.game.set_red_turn()
-        return self.assertEqual(self.game.current_turn.get(), self.game.RED_TURN)
-
-    def test_set_blue_turn(self):
-        self.game.set_blue_turn()
-        return self.assertEqual(self.game.current_turn.get(), self.game.BLUE_TURN)
-
-    def test_set_red_player_option(self):
-        self.game.red_player.option.set('S')
-        return self.assertEqual(self.game.red_player.option.get(), 'S')
-
-    def test_set_blue_player_option(self):
-        self.game.blue_player.option.set('S')
-        return self.assertEqual(self.game.blue_player.option.get(), 'S')
-
-    def test_make_move_red(self):
-        self.game.start_simple_game()
-        self.game.set_red_turn()
-        self.game.red_player.option.set('S')
-        self.game.make_move(0,1)
-        return self.assertEqual(self.game.board[0][1]['text'], self.game.red_player.option.get())
-
-    def test_make_move_blue(self):
-        self.game.start_simple_game()
-        self.game.set_blue_turn()
-        self.game.blue_player.option.set('O')
-        self.game.make_move(0,1)
-        return self.assertEqual(self.game.board[0][1]['text'], self.game.blue_player.option.get())
-
-    def test_make_invalid_move(self):
-        self.game.start_simple_game()
-        self.game.set_red_turn()
-        self.game.red_player.option.set('S')
-        self.game.make_move(2,2)
-
-        # blue tries to make move in spot occupied with 'O' from red's turn
-        self.game.blue_player.option.set('O')
-        self.game.make_move(2,2)
-
-        return self.assertEqual(self.game.board[2][2]['text'], 'S')
-
     def test_start_simple_game(self):
-        self.game.start_simple_game()
-        return self.assertEqual(self.game.gametype, self.game.SIMPLE_GAME)
+        self.gameGUI.set_simple_game()
+        return self.assertEqual(self.gameGUI.game.type, constant.SIMPLE_GAME)
 
-    def test_start_general_game(self):
-        self.game.start_general_game()
-        return self.assertEqual(self.game.gametype, self.game.GENERAL_GAME)
+    def test_set_general_game(self):
+        self.gameGUI.set_general_game()
+        return self.assertEqual(self.gameGUI.game.type, constant.GENERAL_GAME)
 
-    def test_check_if_full_board_empty(self):
-        return self.assertEqual(self.game.check_if_full_board(), False)
+    def test_set_red_human(self):
+        self.gameGUI.game.set_red_human()
+        return self.assertEqual(self.gameGUI.game.red_player.type, constant.HUMAN)
 
-    def test_check_if_full_board_full(self):
-        for row in range(self.game.row_count):
-            for col in range(self.game.col_count):
-                self.game.board[row][col]['text'] = 'S'
-        return self.assertEqual(self.game.check_if_full_board(), True)
+    def test_set_blue_human(self):
+        self.gameGUI.game.set_blue_human()
+        return self.assertEqual(self.gameGUI.game.blue_player.type, constant.HUMAN)
 
-    def test_red_win_simple_game(self):
-        self.game.gametype = self.game.SIMPLE_GAME
-        self.game.set_red_turn()
-        self.game.red_player.option.set('S')
-        self.game.board[0][1]['text'] = 'S'
-        self.game.board[1][1]['text'] = 'O'
-        self.game.make_move(2,1)
-        self.assertEqual(self.game.red_player.get_wins(), 1)
+    def test_set_red_computer(self):
+        self.gameGUI.game.set_red_computer(self.gameGUI.gameboard)
+        return self.assertEqual(self.gameGUI.game.red_player.type, constant.COMPUTER)
 
-    def test_blue_win_simple_game(self):
-        self.game.gametype = self.game.SIMPLE_GAME
-        self.game.set_blue_turn()
-        self.game.blue_player.option.set('S')
-        self.game.board[0][1]['text'] = 'S'
-        self.game.board[1][1]['text'] = 'O'
-        self.game.make_move(2,1)
-        self.assertEqual(self.game.blue_player.get_wins(), 1)
+    def test_set_blue_computer(self):
+        self.gameGUI.game.set_blue_computer(self.gameGUI.gameboard)
+        return self.assertEqual(self.gameGUI.game.blue_player.type, constant.COMPUTER)
 
-    def test_red_sos_score_general_game(self):
-        self.game.gametype = self.game.GENERAL_GAME
-        self.game.set_red_turn()
-        self.game.red_player.option.set('S')
-        self.game.board[0][1]['text'] = 'S'
-        self.game.board[1][1]['text'] = 'O'
-        self.game.make_move(2,1)
-        self.assertEqual(self.game.red_player.get_sos(), 1)
+    def test_computer_choose_option(self):
+        self.gameGUI.game.set_red_computer(self.gameGUI.gameboard)
+        option = self.gameGUI.game.red_player.choose_option()
+        return self.assertEqual(option, self.gameGUI.game.red_player.get_option())
 
-    def test_blue_sos_score_general_game(self):
-        self.game.gametype = self.game.GENERAL_GAME
-        self.game.set_blue_turn()
-        self.game.blue_player.option.set('S')
-        self.game.board[0][1]['text'] = 'S'
-        self.game.board[1][1]['text'] = 'O'
-        self.game.make_move(2,1)
-        self.assertEqual(self.game.blue_player.get_sos(), 1)
+    def test_computer_make_move(self):
+        self.gameGUI.game.set_red_computer(self.gameGUI.gameboard)
+        row, col = self.gameGUI.game.red_player.select_row_col(self.gameGUI.gameboard)
+        self.gameGUI.game.red_player.make_move(self.gameGUI.gameboard, row, col)
+        return self.assertEqual(self.gameGUI.gameboard.get_tile_symbol(row, col), self.gameGUI.game.red_player.get_option())
+
+    def test_red_make_move(self):
+        self.gameGUI.set_simple_game()
+        self.gameGUI.game.set_red_turn()
+        self.gameGUI.game.red_player.set_option('S')
+        self.gameGUI.game.check_game_status(self.gameGUI.gameboard, 2, 2)
+        return self.assertEqual(self.gameGUI.gameboard.get_tile_symbol(2, 2), self.gameGUI.game.red_player.get_option())
+
+    def test_blue_make_move(self):
+        self.gameGUI.set_simple_game()
+        self.gameGUI.game.set_blue_turn()
+        self.gameGUI.game.blue_player.set_option('S')
+        self.gameGUI.game.check_game_status(self.gameGUI.gameboard, 2, 2)
+        return self.assertEqual(self.gameGUI.gameboard.get_tile_symbol(2, 2), self.gameGUI.game.blue_player.get_option())
+
+    def test_simple_game_over(self):
+        self.gameGUI.set_simple_game()
+        self.gameGUI.game.set_red_turn()
+        self.gameGUI.game.red_player.set_option('S')
+        self.gameGUI.gameboard.set_tile_symbol(0, 1, 'S')
+        self.gameGUI.gameboard.set_tile_symbol(1, 1, 'O')
+        self.gameGUI.game.check_game_status(self.gameGUI.gameboard, 2, 1)
+        return self.assertEqual(self.gameGUI.game.red_wins, 1)
+
+    def test_general_game_over(self):
+        self.gameGUI.set_general_game()
+        self.gameGUI.game.set_red_turn()
+        self.gameGUI.game.red_player.set_option('S')
+        self.gameGUI.gameboard.set_tile_symbol(0, 1, 'S')
+        self.gameGUI.gameboard.set_tile_symbol(1, 1, 'O')
+        self.gameGUI.game.check_game_status(self.gameGUI.gameboard, 2, 1)
+        for row in range(self.gameGUI.gameboard.board_size):
+            for col in range(self.gameGUI.gameboard.board_size):
+                if row != 3 or col != 3:
+                    if self.gameGUI.gameboard.get_tile_symbol(row, col) == constant.EMPTY:
+                        self.gameGUI.gameboard.set_tile_symbol(row, col, 'O')
+        self.gameGUI.game.check_game_status(self.gameGUI.gameboard, 3, 3)
+        return self.assertEqual(self.gameGUI.game.red_wins, 1)
+
+
+if __name__ == '__main__':
+    unittest.main()

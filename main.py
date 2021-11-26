@@ -53,16 +53,20 @@ class Computer(Player):
         super().__init__(name, color)
         self.type = constant.COMPUTER
 
-    def select_row_col(self, gameboard):
+    def choose_option(self):
         option_rand = random.choice(['S', 'O'])
         self.set_option(option_rand)
+        return option_rand
+
+    def select_row_col(self, gameboard):
+        option = self.choose_option()
         while(True):
             row_rand = random.randrange(0, gameboard.get_board_size())
             col_rand = random.randrange(0, gameboard.get_board_size())
             if gameboard.get_tile_symbol(row_rand, col_rand) != constant.EMPTY:
                 continue
             else:
-                gameboard.set_tile_symbol(row_rand, col_rand, self.option)
+                gameboard.set_tile_symbol(row_rand, col_rand, option)
                 break
         return row_rand, col_rand
 
@@ -84,6 +88,8 @@ class SimpleGame():
         self.blue_player_type.set(constant.HUMAN)
         self.current_turn = StringVar()
         self.current_player = self.red_player
+        self.red_wins = 0
+        self.blue_wins = 0
         self.to_record = to_record
 
     def record_game(self, winning_player):
@@ -94,6 +100,12 @@ class SimpleGame():
             file.write(f'Gametype: {self.type}\n')
             file.write(f'\tWINNER: {winning_player.get_name()}\n')
             file.write('\n')
+
+    def add_win(self, winning_player):
+        if winning_player == self.red_player:
+            self.red_wins += 1
+        elif winning_player == self.blue_player:
+            self.blue_wins += 1
 
     def reset(self, gameboard):
         print('reset')
@@ -161,6 +173,7 @@ class SimpleGame():
             board_game_status = gameboard.check_game_status(row, col, self.current_player.color)
             if board_game_status == constant.SCORE:
                 self.show_player_win_message(self.current_player)
+                self.add_win(self.current_player)
                 self.reset(gameboard)
                 return constant.NULL
             
@@ -217,6 +230,7 @@ class GeneralGame(SimpleGame):
             
             if gameboard.check_if_full_board():
                 winning_player = self.get_winner()
+                self.add_win(winning_player)
                 if winning_player == constant.DRAW:
                     self.show_draw_message()
                     self.reset(gameboard)
@@ -440,7 +454,6 @@ class SosGameGUI():
         self.game = SimpleGame(self.to_record)
         self.gametype = StringVar()
         self.board_size_entry = constant.EMPTY
-        self.start()
 
     def start(self):
         # place window on computer screen, listen for events
@@ -577,5 +590,7 @@ class SosGameGUI():
         red_S_button.select()
         blue_S_button.select()
 
+
 if __name__ == '__main__':
-    start = SosGameGUI()
+    gameGUI = SosGameGUI()
+    gameGUI.start()
