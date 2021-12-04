@@ -1,5 +1,5 @@
 # python-sos-game
-1. Problem Description
+## Problem Description
 ```
 Your customer asks you to develop the software that allows a blue player to play the SOS game 
 against a red player or replay a recorded game. Either player can be human or computer. 
