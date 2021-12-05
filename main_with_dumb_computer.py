@@ -12,11 +12,8 @@ class Player():
         self.color = color
         self.num_sos = 0
         self.option = StringVar()
-        self.set_name(name)
-        self.set_option('S')
-
-    def set_name(self, name):
         self.name.set(name)
+        self.set_option('S')
 
     def get_name(self):
         return self.name.get()
@@ -146,37 +143,27 @@ class SimpleGame():
             self.blue_player = Computer("blue player", "blue")
             
     def set_red_turn(self, gameboard=constant.NULL):
-        # print('set red turn')
         self.current_turn.set('Current Turn: red player')
         self.current_player = self.red_player
-        # print('current player: ', self.current_player.get_name())
-        # print('current player type: ', self.current_player.type)
         if self.current_player.type == constant.COMPUTER:
             row, col = self.current_player.select_row_col(gameboard)
             self.check_game_status(gameboard, row, col)
 
     def set_blue_turn(self, gameboard=constant.NULL):
-        # print('set blue turn')
         self.current_turn.set('Current Turn: blue player')
         self.current_player = self.blue_player
-        # print('current player: ', self.current_player.get_name())
-        # print('current player type: ', self.current_player.type)
         if self.current_player.type == constant.COMPUTER:
             row, col = self.current_player.select_row_col(gameboard)
             self.check_game_status(gameboard, row, col)
 
     def switch_turn(self, gameboard):
-        # print('switching turns...')
-        if self.current_player.get_name() == self.red_player.get_name():
+        if self.current_player == self.red_player:
             self.set_blue_turn(gameboard)
 
-        elif self.current_player.get_name() == self.blue_player.get_name():
+        elif self.current_player == self.blue_player:
             self.set_red_turn(gameboard)
 
     def check_game_status(self, gameboard, row, col):
-        # print('make simple game move')
-        # print('current player: ', self.current_player.get_name())
-        # print('current player option: ', self.current_player.get_option())
         if self.current_player.make_move(gameboard, row, col) == constant.GOOD_MOVE:
             board_game_status = gameboard.check_game_status(row, col, self.current_player.color)
             if board_game_status == constant.SCORE:
@@ -239,11 +226,6 @@ class GeneralGame(SimpleGame):
             return constant.DRAW
 
     def check_game_status(self, gameboard, row, col):
-        # print('make gen game move')
-        # print(self.current_player.get_name())
-        # print(self.current_player.get_option())
-        print('red sos: ', self.red_player.get_sos())
-        print('blue sos: ', self.blue_player.get_sos())
         if row == constant.FULL_BOARD:
             winning_player = self.get_winner()
             if winning_player == constant.DRAW:
@@ -258,7 +240,6 @@ class GeneralGame(SimpleGame):
                 
         if self.current_player.make_move(gameboard, row, col) == constant.GOOD_MOVE:
             board_game_status = gameboard.check_game_status(row, col, self.current_player.color)
-            # print('board game status: ', board_game_status)
             if board_game_status == constant.SCORE:
                 self.current_player.add_sos()
                 self.check_current_player_computer(gameboard)
@@ -291,20 +272,18 @@ class GeneralGame(SimpleGame):
 class SosGameBoard():
     def __init__(self, board_size):
         self.board_size = board_size
-        self.row_count = board_size
-        self.col_count = board_size
         self.board = []
         self.create_board_skeleton()
 
     def create_board_skeleton(self):
-        for row in range(self.row_count):
+        for row in range(self.board_size):
             self.board.append([])
-            for col in range(self.col_count):
+            for col in range(self.board_size):
                 self.board[row].append(0)  # append empty cell
 
     def reset_board(self):
-        for r in range(self.row_count):
-            for c in range(self.col_count):
+        for r in range(self.board_size):
+            for c in range(self.board_size):
                 tile = self.board[r][c]
                 tile['text'] = ' '
                 tile['bg'] = 'white'
@@ -319,8 +298,8 @@ class SosGameBoard():
         self.board[row][col]['text'] = symbol
 
     def check_if_full_board(self):
-        for row in range(self.row_count):
-            for col in range(self.col_count):
+        for row in range(self.board_size):
+            for col in range(self.board_size):
                 if self.board[row][col]['text'] == ' ':
                     return False
         return True
