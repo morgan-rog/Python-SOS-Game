@@ -48,25 +48,40 @@ class Computer(Player):
         super().__init__(name, color)
         self.type = constant.COMPUTER
 
-    def choose_option(self):
-        option_rand = random.choice(['S', 'O'])
-        self.set_option(option_rand)
-        return option_rand
+    def pick_rand_row_col(self, gameboard):
+        row_rand = random.randrange(0, gameboard.get_board_size())
+        col_rand = random.randrange(0, gameboard.get_board_size())
+        return row_rand, col_rand
+
+    def pick_rand_option(self):
+        option = random.choice(['S', 'O'])
+        self.set_option(option)
+        return option
 
     def select_row_col(self, gameboard):
         if gameboard.check_if_full_board():
             return constant.FULL_BOARD, constant.FULL_BOARD
         else:
-            option = self.choose_option()
-            while(True):
-                row_rand = random.randrange(0, gameboard.get_board_size())
-                col_rand = random.randrange(0, gameboard.get_board_size())
-                if gameboard.get_tile_symbol(row_rand, col_rand) != constant.EMPTY:
-                    continue
-                else:
-                    gameboard.set_tile_symbol(row_rand, col_rand, option)
-                    break
-            return row_rand, col_rand
+            options = ['S', 'O']
+            for option in options:
+                self.set_option(option)
+                for row in range(gameboard.board_size):
+                    for col in range(gameboard.board_size):
+                        if gameboard.get_tile_symbol(row, col) != constant.EMPTY:
+                            continue
+                        else:
+                            if option == 'S':
+                                if gameboard.right_move_check(row, col, 'white') or gameboard.left_move_check(row, col, 'white'):
+                                    return row, col
+                            elif option == 'O':
+                                if gameboard.middle_move_check(row, col, 'white'):
+                                    return row, col
+
+            option = self.pick_rand_option()
+            while(gameboard.get_tile_symbol(row, col) != constant.EMPTY):
+                row, col = self.pick_rand_row_col(gameboard)
+
+            return row, col
 
     def make_move(self, gameboard, row, col):
         gameboard.set_tile_symbol(row, col, self.get_option())
@@ -123,12 +138,15 @@ class SimpleGame():
         self.set_red_turn(gameboard)
 
     def set_red_human(self):
+        self.red_player_type.set(constant.HUMAN)
         self.red_player = Player("red player", "red")
 
     def set_blue_human(self):
+        self.blue_player_type.set(constant.HUMAN)
         self.blue_player = Player("blue player", "blue")
 
     def set_red_computer(self, gameboard):
+        self.red_player_type.set(constant.COMPUTER)
         if self.current_player.get_name() == self.red_player.get_name():
             self.red_player = Computer("red player", "red")
             self.set_red_turn(gameboard)
@@ -136,6 +154,7 @@ class SimpleGame():
             self.red_player = Computer("red player", "red")
 
     def set_blue_computer(self, gameboard):
+        self.blue_player_type.set(constant.COMPUTER)
         if self.current_player.get_name() == self.blue_player.get_name():
             self.blue_player = Computer("blue player", "blue")
             self.set_blue_turn(gameboard)
@@ -184,8 +203,12 @@ class SimpleGame():
 
     def check_both_player_computers(self):
         if self.red_player.type == constant.COMPUTER and self.blue_player.type == constant.COMPUTER:
-            messagebox.showinfo('Red player to Human', 'Red player changed to Human for next game.\nClick Computer for Red to resume both Computer play.')
+            # messagebox.showinfo('Red player to Human', 'Red player changed to Human for next game.\nClick Computer for Red to resume both Computer play.')
+            messagebox.showinfo('Players reset to Human', 'Both players reset to Human')
+            # self.red_player_type.set(constant.HUMAN)
+            # self.blue_player_type.set(constant.HUMAN)
             self.set_red_human()
+            self.set_blue_human()
 
     def show_player_win_message(self, winning_player):
         messagebox.showinfo('WINNER', f'{winning_player.get_name()} wins')
@@ -312,9 +335,10 @@ class SosGameBoard():
                 pass
             elif self.board[move_row][move_col-1]['text'] == 'S' and self.board[move_row][move_col+1]['text'] == 'S':
                 # left to right
-                self.board[move_row][move_col-1]['bg'] = player_color
-                self.board[move_row][move_col+1]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row][move_col-1]['bg'] = player_color
+                    self.board[move_row][move_col+1]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
@@ -323,9 +347,10 @@ class SosGameBoard():
                 pass
             elif self.board[move_row-1][move_col]['text'] == 'S' and self.board[move_row+1][move_col]['text'] == 'S':
                 # up and down
-                self.board[move_row-1][move_col]['bg'] = player_color
-                self.board[move_row+1][move_col]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row-1][move_col]['bg'] = player_color
+                    self.board[move_row+1][move_col]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
@@ -334,9 +359,10 @@ class SosGameBoard():
                 pass
             elif self.board[move_row+1][move_col-1]['text'] == 'S' and self.board[move_row-1][move_col+1]['text'] == 'S':
                 # down left to up right diag
-                self.board[move_row+1][move_col-1]['bg'] = player_color
-                self.board[move_row-1][move_col+1]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row+1][move_col-1]['bg'] = player_color
+                    self.board[move_row-1][move_col+1]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
@@ -345,9 +371,10 @@ class SosGameBoard():
                 pass
             elif self.board[move_row-1][move_col-1]['text'] == 'S' and self.board[move_row+1][move_col+1]['text'] == 'S':
                 # up left to down right diag
-                self.board[move_row-1][move_col-1]['bg'] = player_color
-                self.board[move_row+1][move_col+1]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row-1][move_col-1]['bg'] = player_color
+                    self.board[move_row+1][move_col+1]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
@@ -362,9 +389,10 @@ class SosGameBoard():
                 pass
             elif self.board[move_row][move_col-2]['text'] == 'S' and self.board[move_row][move_col-1]['text'] == 'O':
                 # left to right
-                self.board[move_row][move_col-2]['bg'] = player_color
-                self.board[move_row][move_col-1]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row][move_col-2]['bg'] = player_color
+                    self.board[move_row][move_col-1]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
@@ -373,9 +401,10 @@ class SosGameBoard():
                 pass
             elif self.board[move_row-2][move_col]['text'] == 'S' and self.board[move_row-1][move_col]['text'] == 'O':
                 # up and down
-                self.board[move_row-2][move_col]['bg'] = player_color
-                self.board[move_row-1][move_col]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row-2][move_col]['bg'] = player_color
+                    self.board[move_row-1][move_col]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
@@ -384,9 +413,10 @@ class SosGameBoard():
                 pass
             elif self.board[move_row+2][move_col-2]['text'] == 'S' and self.board[move_row+1][move_col-1]['text'] == 'O':
                 # down left to up right diag
-                self.board[move_row+2][move_col-2]['bg'] = player_color
-                self.board[move_row+1][move_col-1]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row+2][move_col-2]['bg'] = player_color
+                    self.board[move_row+1][move_col-1]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
@@ -395,9 +425,10 @@ class SosGameBoard():
                 pass
             elif self.board[move_row-2][move_col-2]['text'] == 'S' and self.board[move_row-1][move_col-1]['text'] == 'O':
                 # up left to down right diag
-                self.board[move_row-2][move_col-2]['bg'] = player_color
-                self.board[move_row-1][move_col-1]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row-2][move_col-2]['bg'] = player_color
+                    self.board[move_row-1][move_col-1]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
@@ -410,18 +441,20 @@ class SosGameBoard():
         try:
             if self.board[move_row][move_col+2]['text'] == 'S' and self.board[move_row][move_col+1]['text'] == 'O':
                 # left to right
-                self.board[move_row][move_col+2]['bg'] = player_color
-                self.board[move_row][move_col+1]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row][move_col+2]['bg'] = player_color
+                    self.board[move_row][move_col+1]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
         try:
             if self.board[move_row+2][move_col]['text'] == 'S' and self.board[move_row+1][move_col]['text'] == 'O':
                 # up and down
-                self.board[move_row+2][move_col]['bg'] = player_color
-                self.board[move_row+1][move_col]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row+2][move_col]['bg'] = player_color
+                    self.board[move_row+1][move_col]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
@@ -430,18 +463,20 @@ class SosGameBoard():
                 pass
             elif self.board[move_row-2][move_col+2]['text'] == 'S' and self.board[move_row-1][move_col+1]['text'] == 'O':
                 # down left to up right diag
-                self.board[move_row-2][move_col+2]['bg'] = player_color
-                self.board[move_row-1][move_col+1]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row-2][move_col+2]['bg'] = player_color
+                    self.board[move_row-1][move_col+1]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
         try:
             if self.board[move_row+2][move_col+2]['text'] == 'S' and self.board[move_row+1][move_col+1]['text'] == 'O':
                 # up left to down right diag
-                self.board[move_row+2][move_col+2]['bg'] = player_color
-                self.board[move_row+1][move_col+1]['bg'] = player_color
-                move_tile['bg'] = player_color
+                if player_color != 'white':
+                    self.board[move_row+2][move_col+2]['bg'] = player_color
+                    self.board[move_row+1][move_col+1]['bg'] = player_color
+                    move_tile['bg'] = player_color
                 return True
         except IndexError:
             pass
