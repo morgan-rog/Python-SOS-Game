@@ -115,12 +115,14 @@ class SimpleGame():
         with open('recorded_games.txt', 'a') as file:
             file.write(f'{dt_string}\n')
             file.write(f'Gametype: {self.type}\n')
+            file.write(f'{self.red_player.get_name()} - Type: {self.red_player_type.get()}\n')
+            file.write(f'{self.blue_player.get_name()} - Type: {self.blue_player_type.get()}\n')
 
             if winning_player == constant.DRAW:
-                file.write(f'\tNO WINNER - draw\n')
+                file.write(f'NO WINNER - draw\n')
                 file.write('\n')
             else:
-                file.write(f'\tWINNER: {winning_player.get_name()}\n')
+                file.write(f'WINNER: {winning_player.get_name()}\n')
                 file.write('\n')
 
     def add_win(self, winning_player):
@@ -133,6 +135,7 @@ class SimpleGame():
         if self.to_record and winning_player != constant.NULL:
             self.record_game(winning_player)
         gameboard.reset_board()
+        self.check_both_player_computers()
         self.red_player.reset_sos()
         self.blue_player.reset_sos()
         self.set_red_turn(gameboard)
@@ -203,20 +206,15 @@ class SimpleGame():
 
     def check_both_player_computers(self):
         if self.red_player.type == constant.COMPUTER and self.blue_player.type == constant.COMPUTER:
-            # messagebox.showinfo('Red player to Human', 'Red player changed to Human for next game.\nClick Computer for Red to resume both Computer play.')
             messagebox.showinfo('Players reset to Human', 'Both players reset to Human')
-            # self.red_player_type.set(constant.HUMAN)
-            # self.blue_player_type.set(constant.HUMAN)
             self.set_red_human()
             self.set_blue_human()
 
     def show_player_win_message(self, winning_player):
         messagebox.showinfo('WINNER', f'{winning_player.get_name()} wins')
-        self.check_both_player_computers()
 
     def show_draw_message(self):
         messagebox.showinfo('DRAW', 'this game is a draw :)')
-        self.check_both_player_computers()
         
 
 class GeneralGame(SimpleGame):
@@ -230,14 +228,16 @@ class GeneralGame(SimpleGame):
         with open('recorded_games.txt', 'a') as file:
             file.write(f'{dt_string}\n')
             file.write(f'Gametype: {self.type}\n')
-            file.write(f'\tRED SOS count: {self.red_player.get_sos()}\n')
-            file.write(f'\tBLUE SOS count: {self.blue_player.get_sos()}\n')
+            file.write(f'{self.red_player.get_name()} - Type: {self.red_player_type.get()}\n')
+            file.write(f'{self.blue_player.get_name()} - Type: {self.blue_player_type.get()}\n')
+            file.write(f'RED SOS count: {self.red_player.get_sos()}\n')
+            file.write(f'BLUE SOS count: {self.blue_player.get_sos()}\n')
 
             if winning_player == constant.DRAW:
-                file.write(f'\tNO WINNER - draw\n')
+                file.write(f'NO WINNER - draw\n')
                 file.write('\n')
             else:
-                file.write(f'\tWINNER: {winning_player.get_name()}\n')
+                file.write(f'WINNER: {winning_player.get_name()}\n')
                 file.write('\n')
     
     def get_winner(self):
@@ -289,7 +289,6 @@ class GeneralGame(SimpleGame):
     def show_player_win_message(self, winning_player):
         messagebox.showinfo(
             'WINNER', f'red SOS count: {self.red_player.get_sos()}\nblue SOS count: {self.blue_player.get_sos()}\n\n{winning_player.get_name()} wins')
-        self.check_both_player_computers()
 
    
 class SosGameBoard():

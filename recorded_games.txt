@@ -1,0 +1,8 @@
+12/05/2021 16:48:55
+Gametype: General Game
+red player - Type: Computer
+blue player - Type: Human
+RED SOS count: 21
+BLUE SOS count: 2
+WINNER: red player
+
