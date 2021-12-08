@@ -1,8 +1,6 @@
-12/05/2021 16:48:55
-Gametype: General Game
-red player - Type: Computer
-blue player - Type: Human
-RED SOS count: 21
-BLUE SOS count: 2
-WINNER: red player
-
+{"date_time": "12/08/2021 15:50:37", "gametype": "Simple Game", "board_size": 4, "winning_player": "red player"}
+{"date_time": "12/08/2021 15:51:14", "gametype": "General Game", "board_size": 3, "red_sos_count": 2, "blue_sos_count": 2, "winning_player": "Draw"}
+{"date_time": "12/08/2021 15:51:59", "gametype": "Simple Game", "board_size": 5, "winning_player": "blue player"}
+{"date_time": "12/08/2021 15:53:16", "gametype": "General Game", "board_size": 5, "red_sos_count": 9, "blue_sos_count": 1, "winning_player": "red player"}
+{"date_time": "12/08/2021 15:53:46", "gametype": "Simple Game", "board_size": 4, "winning_player": "blue player"}
+{"date_time": "12/08/2021 15:54:13", "gametype": "General Game", "board_size": 8, "red_sos_count": 26, "blue_sos_count": 20, "winning_player": "red player"}
