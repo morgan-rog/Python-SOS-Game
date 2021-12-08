@@ -112,7 +112,6 @@ class SimpleGame():
 
     def record_game(self, winning_player, gameboard):
         board_size = gameboard.get_board_size()
-        winning_player_name = winning_player.get_name()
         now = datetime.now()
         dt_string = now.strftime("%m/%d/%Y %H:%M:%S")
 
@@ -122,6 +121,7 @@ class SimpleGame():
                 file.write(json.dumps(data_dict))
                 file.write('\n')
             else:
+                winning_player_name = winning_player.get_name()
                 data_dict = {'date_time': dt_string, 'gametype': constant.SIMPLE_GAME, 'board_size': board_size, 'winning_player': winning_player_name}
                 file.write(json.dumps(data_dict))
                 file.write('\n')
@@ -225,7 +225,6 @@ class GeneralGame(SimpleGame):
         
     def record_game(self, winning_player, gameboard):
         board_size = gameboard.get_board_size()
-        winning_player_name = winning_player.get_name()
         red_sos_count = self.red_player.get_sos()
         blue_sos_count = self.blue_player.get_sos()
         now = datetime.now()
@@ -237,6 +236,7 @@ class GeneralGame(SimpleGame):
                 file.write(json.dumps(data_dict))
                 file.write('\n')
             else:
+                winning_player_name = winning_player.get_name()
                 data_dict = {'date_time': dt_string, 'gametype': constant.GENERAL_GAME, 'board_size': board_size, 'red_sos_count': red_sos_count, 'blue_sos_count': blue_sos_count, 'winning_player': winning_player_name}
                 file.write(json.dumps(data_dict))
                 file.write('\n')
